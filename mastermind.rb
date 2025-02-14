@@ -104,9 +104,6 @@ return(@generated_code)
     # maybe write logic to keep calling play_round until either 
     # a max of x rounds, or until the perfect match is entered by the human 
     
-    
-
-    generate_computer_code 
     make_a_guess 
     check_player_guess 
     #loop_through_the_game_logic 
@@ -114,6 +111,14 @@ return(@generated_code)
     #puts "Your guesses so far are: #{@all_guesses}"
 
   end
+
+  def play_game
+    
+    generate_computer_code
+    play_round
+    
+  end 
+
 end 
 
 game = Mastermind.new 
@@ -121,4 +126,4 @@ puts "Let's crack the code! You have 8 turns!"
     puts "Black peg means correct color, correct position"
     puts "Red peg means correct color, wrong position"
     puts "No peg means all colors are incorrect" 
-game.play_round 
+game.play_game
