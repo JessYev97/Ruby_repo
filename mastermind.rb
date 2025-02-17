@@ -81,15 +81,17 @@ class Mastermind
   end
   
   def loop_through_the_game_logic  
-    puts $round_nested_array 
+    #puts $round_nested_array 
     if $guess == @generated_code or $feedback_array == ["black", "black", "black", "black"]
       puts "YOU WIN! your guess of #{$guess} matches the computer code: #{@generated_code}!"
 return(@generated_code) 
     elsif @all_guesses.length < 8 
-      @all_guesses << $round_nested_array 
+      
+      puts "your guesses so far with their feedback are: #{@all_guesses}"
       $guess.clear  
       $feedback_array.clear
       $round_nested_array.clear 
+      
       play_round 
 
     elsif @all_guesses.length == 8 
@@ -113,7 +115,7 @@ return(@generated_code)
   end
 
   def play_game
-    
+
     generate_computer_code
     play_round
     
