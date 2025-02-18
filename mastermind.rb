@@ -15,7 +15,7 @@ class Mastermind
     end
     
 
-  def generate_computer_code
+  def generate_code
     # use rand method to randomly generate code of four colors from array of colors 
    
     4.times do 
@@ -26,7 +26,7 @@ class Mastermind
     return(@generated_code) 
   end
 
-  def make_a_guess
+  def guess_colors
     
     puts "list of colors: #{@colors}" 
     puts "guess the first color"
@@ -57,36 +57,13 @@ class Mastermind
       #puts "previous guesses: #{@all_guesses}" 
   end
 
-  def check_player_guess
-    
-     
-    $guess.each_with_index do |color, index|  
-      index_position = index 
-          if @generated_code[index_position] == color
-            $feedback_array << "black" 
-          elsif  @generated_code.include?(color)
-                  $feedback_array << "red" 
-          else 
-            $feedback_array << "incorrect" 
-          end 
-         
-         # puts $round_nested_array ---> this prints out a whole lot of colors :< 
-      end 
-      puts "the feedback to your guess of #{$guess} is #{$feedback_array}" 
-    $round_nested_array << $guess.clone
-    $round_nested_array << $feedback_array.clone
-    @all_guesses << $round_nested_array.clone
-    #$feedback_array 
-    loop_through_the_game_logic
-  end
-  
-  def loop_through_the_game_logic  
+  def game_loop
     #puts $round_nested_array 
     if $guess == @generated_code or $feedback_array == ["black", "black", "black", "black"]
       puts "YOU WIN! your guess of #{$guess} matches the computer code: #{@generated_code}!"
 return(@generated_code) 
     elsif @all_guesses.length < 8 
-      
+
       puts "your guesses so far with their feedback are: #{@all_guesses}"
       $guess.clear  
       $feedback_array.clear
@@ -100,23 +77,53 @@ return(@generated_code)
 
   end
 
+  def validate_guess
+    
+    color_counts = Hash.new(0) 
+
+    $guess.each_with_index do |color, index| 
+
+      index_position = index 
+       color_counts[color] += 1 
+      
+          if @generated_code[index_position] == color
+            $feedback_array << "black" 
+          elsif  @generated_code.include?(color) and @generated_code.count(color) >= color_counts[color]
+                  $feedback_array << "red" 
+          else 
+            $feedback_array << "incorrect" 
+          end 
+         
+        
+          
+      end 
+      puts "the feedback to your guess of #{$guess} is #{$feedback_array}" 
+    $round_nested_array << $guess.clone
+    $round_nested_array << $feedback_array.clone
+    @all_guesses << $round_nested_array.clone
+    #$feedback_array 
+    game_loop
+  end
+  
+  
+
   def play_round
     # use gets to prompt the human for four colors 
-    # call the check_player_guess and pass in the input from gets 
+    # call the validate_guess and pass in the input from gets 
     # maybe write logic to keep calling play_round until either 
     # a max of x rounds, or until the perfect match is entered by the human 
     
-    make_a_guess 
-    check_player_guess 
-    #loop_through_the_game_logic 
+    guess_colors  
+    validate_guess
+    #game_loop
     
     #puts "Your guesses so far are: #{@all_guesses}"
 
   end
 
-  def play_game
+  def start_game 
 
-    generate_computer_code
+    generate_code
     play_round
     
   end 
@@ -128,4 +135,4 @@ puts "Let's crack the code! You have 8 turns!"
     puts "Black peg means correct color, correct position"
     puts "Red peg means correct color, wrong position"
     puts "No peg means all colors are incorrect" 
-game.play_game
+game.start_game 
