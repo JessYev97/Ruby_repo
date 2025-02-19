@@ -27,8 +27,13 @@ class Mastermind
   end
 
   def guess_colors
-    
-    puts "list of colors: #{@colors}" 
+    puts "------------------------------" 
+    puts "list of colors to choose from: "
+    puts "#{@colors[0]}" 
+    puts "#{@colors[1]}" 
+    puts "#{@colors[2]}"
+    puts "#{@colors[3]}" 
+    puts "------------------------------" 
     puts "guess the first color"
     first_color = gets.chomp 
     $guess << first_color 
@@ -63,8 +68,18 @@ class Mastermind
       puts "YOU WIN! your guess of #{$guess} matches the computer code: #{@generated_code}!"
 return(@generated_code) 
     elsif @all_guesses.length < 8 
-
-      puts "your guesses so far with their feedback are: #{@all_guesses}"
+      round_count = 0
+      puts 
+      puts "your guesses so far with their feedback are:"
+      puts 
+      @all_guesses.each do |round| 
+        round_count += 1 
+        puts "Round: #{round_count} --------------------" 
+        puts "Your Guess: #{round[0].inspect}"
+        puts "Its Feedback: #{round[1].inspect}" 
+        
+      end
+      puts 
       $guess.clear  
       $feedback_array.clear
       $round_nested_array.clear 
