@@ -3,11 +3,7 @@ class Mastermind
   $guess = [] 
   $feedback_array = [] 
   $round_nested_array = []
-  # /\ both of these will be specific to each round 
-  # they get reset to empty arrays at the end of each round. 
-  # each guess will be stored in the initialized all_guess array for the entire game. 
-  # maybe feedback should also be stored in an initialized array for the entire game. 
-
+  
     def initialize
     @colors = ["green", "blue", "pink", "yellow", "orange"] 
     @generated_code = [] 
@@ -33,6 +29,7 @@ class Mastermind
     puts "#{@colors[1]}" 
     puts "#{@colors[2]}"
     puts "#{@colors[3]}" 
+    puts "#{@colors[4]}"
     puts "------------------------------" 
     puts "guess the first color"
     first_color = gets.chomp 
@@ -116,38 +113,68 @@ return(@generated_code)
     $round_nested_array << $guess.clone
     $round_nested_array << $feedback_array.clone
     @all_guesses << $round_nested_array.clone
-    #$feedback_array 
     game_loop
   end
   
   
 
   def play_round
-    # use gets to prompt the human for four colors 
-    # call the validate_guess and pass in the input from gets 
-    # maybe write logic to keep calling play_round until either 
-    # a max of x rounds, or until the perfect match is entered by the human 
-    
     guess_colors  
     validate_guess
-    #game_loop
-    
-    #puts "Your guesses so far are: #{@all_guesses}"
-
   end
 
-  def start_game 
+  def human_chooses
+    puts
+    puts "------------------------------" 
+    puts "list of colors to choose from: "
+    puts "#{@colors[0]}" 
+    puts "#{@colors[1]}" 
+    puts "#{@colors[2]}"
+    puts "#{@colors[3]}" 
+    puts "#{@colors[4]}"
+    puts "------------------------------"
+    puts 
+    puts "choose the first color in the code"
+    first = gets.chomp 
+    @generated_code << first
+    puts "choose the second color in the code" 
+    second = gets.chomp 
+    @generated_code << second
+    puts "choose the third color in the code"
+    third = gets.chomp 
+    @generated_code << third
+    puts "choose one more color for the code"
+    last = gets.chomp 
+    @generated_code << last 
+    puts "The code you chose is: #{@generated_code}"
+  end
 
-    generate_code
-    play_round
-    
-  end 
+  def determine_roles 
+    puts "do you want to play, or watch?"
+    puts "To guess the code, type P"
+    puts "To make the code yourself and watch the computer solve it, type W"
+    determination = gets.chomp 
+
+    if determination == "P"
+      generate_code 
+      play_round
+    elsif determination == "W"
+      
+      human_chooses 
+   # else 
+      #puts "please type either  P  or  W  "
+
+    end
+
+  end
 
 end 
 
 game = Mastermind.new 
+puts "----------"
 puts "Let's crack the code! You have 8 turns!"
     puts "Black peg means correct color, correct position"
     puts "Red peg means correct color, wrong position"
     puts "No peg means all colors are incorrect" 
-game.start_game 
+puts "----------"
+game.determine_roles
