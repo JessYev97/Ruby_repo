@@ -1,5 +1,6 @@
 class Mastermind 
   
+  $round_count
   $guess = [] 
   $feedback_array = [] 
   $round_nested_array = []
@@ -57,17 +58,26 @@ class Mastermind
     $guess << final_color 
     puts "#{$guess}" 
     puts 
-    
-      #puts "previous guesses: #{@all_guesses}" 
+  
   end
 
+def random_guess
+  #the computer generates a random guess for the firest round. 
+  4.times do 
+    random_num = rand(5) 
+    selected_color = @colors[random_num]
+    $guess << selected_color 
+  end
+end
+
+
   def game_loop
-    #puts $round_nested_array 
+    
     if $guess == @generated_code or $feedback_array == ["black", "black", "black", "black"]
       puts "YOU WIN! your guess of #{$guess} matches the computer code: #{@generated_code}!"
 return(@generated_code) 
     elsif @all_guesses.length < 8 
-      round_count = 0
+      $round_count = 0
       puts 
       puts "your guesses so far with their feedback are:"
       puts 
@@ -76,13 +86,11 @@ return(@generated_code)
         puts "Round: #{round_count} --------------------" 
         puts "Your Guess: #{round[0].inspect}"
         puts "Its Feedback: #{round[1].inspect}" 
-        
-      end
+      end   #  <---- closing the do end block 
       puts 
       $guess.clear  
       $feedback_array.clear
       $round_nested_array.clear 
-      
       play_round 
 
     elsif @all_guesses.length == 8 
@@ -99,6 +107,7 @@ return(@generated_code)
 
       index_position = index 
        color_counts[color] += 1 
+
       
           if @generated_code[index_position] == color
             $feedback_array << "black" 
@@ -118,15 +127,41 @@ return(@generated_code)
     game_loop
   end
   
+  def educated_guess
+    $feedback_array.each_with_index do |color, index|  
+      next_i = index + 1
+      previous_i = index - 1
+      if $feedback_array[index] == "black" 
+        @generated_code[index] = color and $guess[index] = @generated_code[index] 
+      elsif $feedback_array[index] == "red" 
+        if $feedback_array[next_i] != "black"
+          $guess[next_i] = color 
+        elsif   previous_i != "black"
+          $guess[previous_i] = color 
+        else #the color needs to go to the only remaining array index. . . 
+        end
+      elseif $feedback_array[index] == "incorrect" 
+        @colors.delete(color) 
+      end
+    end
+  end
   
 
   def play_round
     if @human_path == 1
-      puts "the human is guessing the code this round!"
+      #the human guesses in this path 
       guess_colors  
       validate_guess 
     elsif @computer_path == 1 
-      puts "the computer is guessing the code this round!"
+      #the computer guesses in this path 
+     if $round_count < 2
+      random_guess
+      validate_guess 
+     else 
+      educated_guess
+      validate_guess
+     end 
+
     end
     
   end
@@ -164,14 +199,17 @@ return(@generated_code)
     determination = gets.chomp 
 
     if determination == "P"
+      
+      puts "the human is guessing the code this round!"
       @human_path += 1 
       generate_code 
       play_round
     elsif determination == "W"
+      puts "the computer is guessing the code this round!"
       @computer_path += 1 
       human_generates_code
       play_round
-      
+
    # else 
       #puts "please type either  P  or  W  "
 
