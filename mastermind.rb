@@ -8,6 +8,8 @@ class Mastermind
     @colors = ["green", "blue", "pink", "yellow", "orange"] 
     @generated_code = [] 
     @all_guesses = [] 
+    @human_path = 0
+    @computer_path = 0 
     end
     
 
@@ -119,11 +121,17 @@ return(@generated_code)
   
 
   def play_round
-    guess_colors  
-    validate_guess
+    if @human_path == 1
+      puts "the human is guessing the code this round!"
+      guess_colors  
+      validate_guess 
+    elsif @computer_path == 1 
+      puts "the computer is guessing the code this round!"
+    end
+    
   end
 
-  def human_chooses
+  def human_generates_code 
     puts
     puts "------------------------------" 
     puts "list of colors to choose from: "
@@ -156,11 +164,14 @@ return(@generated_code)
     determination = gets.chomp 
 
     if determination == "P"
+      @human_path += 1 
       generate_code 
       play_round
     elsif determination == "W"
+      @computer_path += 1 
+      human_generates_code
+      play_round
       
-      human_chooses 
    # else 
       #puts "please type either  P  or  W  "
 
