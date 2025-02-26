@@ -4,6 +4,7 @@ class Mastermind
   $guess = [] 
   $feedback_array = [] 
   $round_nested_array = []
+   
   
     def initialize
     @colors = ["green", "blue", "pink", "yellow", "orange"] 
@@ -63,176 +64,186 @@ class Mastermind
 
 def random_guess
   #the computer generates a random guess for the firest round. 
+  
   4.times do 
     random_num = rand(5) 
     selected_color = @colors[random_num]
     $guess << selected_color 
+    puts $guess 
+    ackn = gets.chomp 
+    puts ackn 
   end
-  puts "you seeing this step? -- random first guess"
-       answer = gets.chomp 
-       puts answer 
 end
 
+  def put_guesses
+    $round_count = 0 
+    puts 
+    puts "your guesses so far with their feedback are:" 
+    puts 
+    @all_guesses.each do |round| 
 
-  def game_loop
-    puts "now we're going to check that info agains the win / loss logic. acknowledge this :)"
-    got_it = gets.chomp 
-    puts got_it 
+      $round_count += 1 
+      puts "Round: #{$round_count} --------------------" 
+      puts "Your Guess: #{round[0].inspect}"
+      puts "Its Feedback: #{round[1].inspect}" 
+    end   #  <---- closing the do end block 
+  end
+  
+  def computer_loop 
+    if $feedback_array == ["black", "black", "black", "black"] 
+      puts "YOU WIN!! you guessed the #{@generated_code} code" 
+    elsif @all_guesses.length < 8 or $round_count <= 8 
+      put_guesses 
+      play_round 
+    else 
+      puts "You are out of guesses; you lost this game"
+      puts "the code was #{@generated_code}" 
+    end 
+  end 
 
-    if $guess == @generated_code or $feedback_array == ["black", "black", "black", "black"]
-      puts "YOU WIN! your guess of #{$guess} matches the computer code: #{@generated_code}!"
-return(@generated_code) 
-    elsif @all_guesses.length < 8 
-     
-      puts 
-      puts "your guesses so far with their feedback are:" 
-      puts 
-      @all_guesses.each do |round| 
-        $round_count += 1 
-        puts "Round: #{$round_count} --------------------" 
-        puts "Your Guess: #{round[0].inspect}"
-        puts "Its Feedback: #{round[1].inspect}" 
-      end   #  <---- closing the do end block 
-      puts 
-      puts "here is where the logic splits for the computer. It prevents game_loop from emptying the arrays. ackn"
-      ackn = gets.chomp 
-      puts ackn 
-
-      if @computer_path == 1
+  def human_loop
+    if $feedback_array == ["black", "black", "black", "black"] 
+      puts "YOU WIN!! you guessed the #{@generated_code} code" 
+    elsif @all_guesses.length < 8 or $round_count <= 8 
+      put_guesses 
       
-        if @all_guesses.length == 8 or $round_count > 8 
-          puts "You're out of guesses. The correct code was: #{@generated_code}" 
-        else 
-          play_round
-        end 
-         
-      end
       $guess.clear  
       $feedback_array.clear
-      $round_nested_array.clear 
+      $round_nested_array.clear
       play_round 
-
-    elsif @all_guesses.length == 8 
-      puts "You're out of guesses. The correct code was: #{@generated_code}" 
+    else 
+      puts "You are out of guesses; you lost this game"
+      puts "the code was #{@generated_code}" 
     end 
-
   end
 
   def validate_guess
     
     color_counts = Hash.new(0) 
 
-    if @computer_path == 1 
-      puts "we're about to iterate over the $guess array"
-    puts "validate that you're with me"
-    respond = gets.chomp 
-    puts respond 
-    end
-
     $guess.each_with_index do |color, index| 
 
       index_position = index 
        color_counts[color] += 1 
-
+       # color counts is a hash to hold each instance of the respective colors when found in a guess. 
       
           if @generated_code[index_position] == color
             $feedback_array << "black" 
+
+
           elsif  @generated_code.include?(color) and @generated_code.count(color) >= color_counts[color] 
-            color_index = @generated_code.index(color) 
-            guessed_color_index = $guess.index(color) 
-            if @generated_code.count(color) == 1 and @generated_code[color_index] == $guess[guessed_color_index]
-              $feedback_array << "incorrect"
-            else
+
+           # color_index = @generated_code.index(color) 
+
+           # guessed_color_index = $guess.index(color) 
+
+            #if @generated_code.count(color) == 1 and 
+               # @generated_code[color_index] == $guess[guessed_color_index]
+
+             # $feedback_array << "incorrect"
+
+            #else
                 $feedback_array << "red"  
-            end
+            #end
                   
           else 
             $feedback_array << "incorrect" 
           end 
-         
-        puts "we just populated the $feedback_array: #{$feedback_array}"
-        puts "pause to acknowledge"
-        tell_em = gets.chomp 
-        puts tell_em 
           
       end 
       puts "the feedback to your guess of #{$guess} is #{$feedback_array}" 
     $round_nested_array << $guess.clone
     $round_nested_array << $feedback_array.clone
     @all_guesses << $round_nested_array.clone
-    puts "now the program should have output the info of the round, and pushed info into the arrays"
-    puts "the $round_nested: #{$round_nested_array} the @all_guesses: #{@all_guesses}" 
-    hmm = gets.chomp 
-    puts hmm 
-    game_loop
+    
   end
   
-  def educated_guess
-
-    puts "next step: educated_guess. This is before it runs. validate and move on to see how it runs"
-    validate = gets.chomp 
-    puts validate 
-
-    $feedback_array.each_with_index do |color, index|  
-      next_i = index + 1
-      previous_i = index - 1
-      if $feedback_array[index] == "black" 
-        @generated_code[index] = color 
-         $guess[index] = @generated_code[index] 
-      elsif $feedback_array[index] == "red" 
-        if next_i < $feedback_array.length and $feedback_array[next_i] != "black"
-          $guess[next_i] = color 
-        elsif   previous_i >= 0 and $feedback_array[previous_i] != "black"
-          $guess[previous_i] = color 
-        else #the color needs to go to the only remaining array index. . . 
-          last_available_index = $guess.each_index.select { |index| $feedback_array[index] != "black" and $guess[index].nil? }.last 
-          $guess[last_available_index] = color if last_available_index 
-        end
-      elsif $feedback_array[index] == "incorrect" 
-        @colors.delete(color) 
+  def add_new_colors
+    # this method should check the $guess to see if any array positions are empty
+    # if so, run random guess style logic on it, or refactor that method to suit this step 
+    $guess.each_with_index do |color, index| 
+      if color == ""
+        # determine random color using the @colors array of options 
+        # may want to account for already determined incorrect or out of place colors 
+        random_index = rand(@colors.length) # intending to pass in the number of items available in colors array
+        # to the rand method to randomly pick an available color in the colors array 
+        # now, we need to account for any instance of that color having been guessed in this position before. 
+        color << @colors[random_index]
+        #could make a conditional here to randomize reds that duplicate black feedback
       end
     end
-    puts "the current feedback_array is #{$feedback_array}, the round_nested_array is #{$round_nested_array}"
-    puts "the guess array is #{$guess} and all but the guess are about to be cleared by the method."
-    puts "you keeping up? "
-    answer_it = gets.chomp 
-    puts answer_it 
+  end
+
+  def educated_guess
+    $next_guess_queue = Array.new(4, "") # this is to temporarily hold the next guess in educated_guess 
+
+    $feedback_array.each_with_index do |info, index|  
+      next_i = index + 1
+      previous_i = index - 1
+      if info == "black"  
+         $next_guess_queue[index] = $guess[index] 
+         
+      elsif info == "red" 
+        if next_i < $feedback_array.length and $feedback_array[next_i] != "black"
+          $next_guess_queue[next_i] = $guess[index] 
+          
+        elsif   previous_i >= 0 and $feedback_array[previous_i] != "black"
+          $next_guess_queue[previous_i] = $guess[index] 
+          
+        else #the color needs to go to the only remaining array index. . . 
+          last_available_index = $guess.each_index.select { |index| $feedback_array[index] != "black" and $guess[index].nil? }.last 
+          $next_guess_queue[last_available_index] = $guess[index] if last_available_index 
+          
+        end
+      elsif info == "incorrect" 
+        @colors.delete($guess[index]) 
+      end
+    end
+
+      $guess.clear 
+      $next_guess_queue.each_with_index do |color, index|
+        $guess[index] = color 
+      end
+      $next_guess_queue.clear
+
+      add_new_colors 
+
+      puts $guess 
+      i_see = gets.chomp 
+      puts i_see
     $feedback_array.clear
     $round_nested_array.clear
-    puts "now the feedback array and round nested should be cleared: #{$round_nested_array}, and #{$feedback_array}" 
   end
-  
 
   def play_round
     if @human_path == 1
-      puts "there is #{@human_path} person playing!"
+    
       #the human guesses in this path 
       guess_colors  
       validate_guess 
+      human_loop
     elsif @computer_path == 1 
-      puts "you seeing this step?"
-      verify_round = gets.chomp 
-      puts verify_round
       #the computer guesses in this path 
      if $round_count < 1
-       puts "you seeing this step? -- the round_count is #{$round_count}. the conditional indicates < 1"
+      
        answer = gets.chomp 
        puts answer 
       random_guess
       validate_guess 
+      computer_loop 
      else 
-      puts "you seeing this step? -- the round_count is #{$round_count}. the conditional indicates > 1"
       answer = gets.chomp 
       puts answer 
       educated_guess
       validate_guess
+      computer_loop
      end 
 
     end
     
   end
 
-  def human_generates_code 
+  def display_colors 
     puts
     puts "------------------------------" 
     puts "list of colors to choose from: "
@@ -243,6 +254,10 @@ return(@generated_code)
     puts "#{@colors[4]}"
     puts "------------------------------"
     puts 
+  end
+
+  def human_generates_code 
+    display_colors 
     puts "choose the first color in the code"
     first = gets.chomp 
     @generated_code << first
